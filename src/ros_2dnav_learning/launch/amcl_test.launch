@@ -1,0 +1,20 @@
+<!-- amcl_test.launch -->
+<launch>
+
+  <!-- 1. 定义地图文件的路径参数 -->
+  <!-- 'arg' 允许我们灵活地指定地图文件。默认值指向之前用 map_saver 保存的 map.yaml 文件。 -->
+  <arg name="map" default="$(find ros_2dnav_learning)/map/map.yaml"/>
+
+  <!-- 2. 启动地图服务器 (map_server) -->
+  <!-- 这个节点会读取 map.yaml 文件，加载 map.pgm 图像，并将其作为栅格地图发布到 /map 话题上。-->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
+
+  <!-- 3. 启动仿真环境和机器人 -->
+  <!-- 包含 car_robot_rplidar.launch 文件。这个文件会负责启动 Gazebo、加载世界、生成机器人模型、启动 Rviz 和键盘控制。 -->
+  <include file="$(find ros_2dnav_learning)/launch/car_robot_rplidar.launch"/>
+
+  <!-- 4. 启动 AMCL 定位节点 -->
+  <!-- 包含 amcl_diff.launch 文件。这个文件会启动并配置 AMCL 节点，使其订阅 /scan 和 /tf 话题，并根据 /map 话题进行定位。 -->
+  <include file="$(find ros_2dnav_learning)/launch/amcl_diff.launch"/>
+
+</launch>

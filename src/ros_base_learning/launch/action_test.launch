@@ -1,0 +1,9 @@
+<launch>
+
+  <!-- 启动动作服务器节点 -->
+  <node pkg="ros_base_learning" type="counter_server" name="counter_server" output="screen" />
+
+  <!-- 启动动作客户端节点 -->
+  <node pkg="ros_base_learning" type="counter_client" name="counter_client" output="screen" />
+
+</launch>

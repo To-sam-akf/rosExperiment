@@ -1,0 +1,47 @@
+<launch>
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" clear_params="true">
+    
+    <!-- ================= 核心配置文件加载 ================= -->
+    <rosparam file="$(find ros_autonav)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find ros_autonav)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find ros_autonav)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find ros_autonav)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find ros_autonav)/config/base_local_planner_params.yaml" command="load" />
+
+    <!-- ================= 关键参数调整 (解决卡死问题) ================= -->
+
+    <!-- 1. 全局规划容忍度 (单位：米) -->
+    <!-- 关键！如果目标点在墙里，允许规划器在目标点周围 1.0米 范围内找一个最近的安全点作为终点 -->
+    <param name="NavfnROS/default_tolerance" value="1.5" />
+    <!-- 2. 允许规划未知区域 -->
+    <!-- 确保规划器敢于规划路线穿过还没建图的灰色区域 -->
+    <param name="NavfnROS/allow_unknown" value="true" />
+    
+    <!-- 1. 开启恢复行为 -->
+    <!-- 如果规划失败，允许机器人尝试自救（比如清除周围的障碍物地图、原地旋转） -->
+    <param name="recovery_behavior_enabled" value="true" /> 
+    <param name="clearing_rotation_allowed" value="true" />
+
+    <!-- 2. 规划器耐心值 (Planner Patience) -->
+    <!-- 默认是 5.0秒。意思是如果全局规划器 5秒内 算不出路径，就报错。 -->
+    <!-- 在 SLAM 建图时，地图可能没闭合，建议稍微给多一点时间让它重试，但不要太长。 -->
+    <param name="planner_patience" value="5.0" />
+    <param name="controller_patience" value="5.0" />
+
+    <!-- 3. 规划重试次数 -->
+    <!-- 在执行恢复行为之前，尝试重新规划路径的次数。设为 -1 表示无限重试（不推荐），设为 1 或 2 比较合适。 -->
+    <param name="max_planning_retries" value="3" />
+
+    <!-- 4. 震荡/卡死超时 (Oscillation Timeout) -->
+    <!-- 这是一个神技！如果机器人在原地左右横跳（震荡）超过 10秒 没有任何进展，move_base 就会强制触发恢复行为。 -->
+    <!-- 很多时候机器人不动，其实是在微小的范围内震荡，这个参数能把它“救”出来。 -->
+    <param name="oscillation_timeout" value="10.0" />
+    <param name="oscillation_distance" value="0.2" />
+
+    <!-- 5. 控制频率 -->
+    <!-- 确保这个频率和 base_local_planner_params.yaml 里的一致或更高 -->
+    <param name="controller_frequency" value="5.0" />
+    <param name="planner_frequency" value="3.0" />
+
+  </node>
+</launch>

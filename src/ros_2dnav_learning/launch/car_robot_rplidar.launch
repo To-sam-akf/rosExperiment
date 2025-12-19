@@ -1,0 +1,49 @@
+<launch>
+  <!-- 设置launch文件的参数 -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  
+  <!-- 参数：机器人模型文件路径。这里引用了 urdf_learning 包里的xacro文件 -->
+  <arg name="model" default="$(find urdf_learning)/urdf/car_robot_rplidar.xacro"/>
+  <!-- 参数：Rviz配置文件路径 -->
+  <arg name="rvizconfig" default="$(find ros_2dnav_learning)/config/gazebo.rviz"/>
+
+  <!-- 运行gazebo仿真环境 -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <!-- 参数：指定要在Gazebo中加载的世界文件 -->
+    <arg name="world_name" value="$(find ros_2dnav_learning)/world/gmap_test1.world"/>
+  </include>
+
+  <!-- 加载机器人模型描述参数到参数服务器 -->
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
+
+  <!-- 运行joint_state_publisher节点, 发布机器人的关节状态 -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  
+  <!-- 运行robot_state_publisher节点, 发布tf -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="30.0"/>
+  </node>
+
+  <!-- 在gazebo中加载机器人模型-->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+        args="-param robot_description -urdf -model car_robot_2diff"/>
+
+  <!-- 启动Rviz可视化界面 -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"/>
+
+ <!-- 启动键盘控制节点，并设置自定义速度 -->
+  <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen">
+    <!-- 设置线速度为 0.2 m/s (默认可能是 0.5) -->
+    <param name="speed" value="0.2" />
+    <param name="turn" value="0.5"/>
+  </node>
+</launch>

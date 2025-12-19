@@ -1,0 +1,33 @@
+<launch>
+    <!-- 设置模型文件路径参数 -->
+    <param name="robot_description" command="$(find xacro)/xacro $(find robot_simulation)/urdf/robot.xacro" />
+
+    <!-- 启动 Gazebo -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+
+    <!-- 在 Gazebo 中生成机器人模型 -->
+    <!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model my_robot" /> -->
+    <!-- 在 Gazebo 中生成机器人模型，并设定初始高度为Z=0.1米 -->
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model my_robot -z 0.1" /> 
+    
+    <!-- 启动 robot_state_publisher -->
+    <!-- 它会发布机器人所有link的TF变换关系 -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <!-- 启动 joint_state_publisher -->
+    <!-- 如果关节不是fixed，它会提供一个GUI来控制关节，这里我们不需要，但保留是个好习惯 -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    
+    <!-- 启动 RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_simulation)/config/robot_display.rviz" required="true" />
+    <!-- 启动 rqt_robot_steering GUI 控制节点 -->
+    <node name="robot_steering_gui" pkg="rqt_robot_steering" type="rqt_robot_steering">
+        <param name="default_topic" value="/cmd_vel"/>
+    </node>
+</launch>

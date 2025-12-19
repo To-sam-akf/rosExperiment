@@ -1,0 +1,8 @@
+# Goal: 定义我们想让服务器实现的目标
+int32 target_number
+---
+# Result: 任务完成后返回的结果
+int32 final_count
+---
+# Feedback: 任务执行过程中周期性返回的数据
+int32 current_number

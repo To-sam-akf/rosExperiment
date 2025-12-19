@@ -1,0 +1,38 @@
+<launch>
+    <!-- 
+        任务1: 启动乌龟模拟器节点 (turtlesim_node)
+        这个节点默认会订阅名为 /turtle1/cmd_vel 的话题来接收速度指令。
+    -->
+    <node pkg="turtlesim" type="turtlesim_node" name="turtlesim_node">
+        <!-- 
+            使用 <remap> 标签进行话题重映射。
+            将该节点原来要订阅的 /turtle1/cmd_vel 话题，重定向到 /turtlesim/cmd_vel_cov 话题。
+            这样，它就会接收我们转换节点发布的消息。
+        -->
+        <remap from="/turtle1/cmd_vel" to="/turtlesim/cmd_vel_cov"/>
+    </node>
+
+    <!-- 
+        任务2: 启动键盘控制节点 (turtle_teleop_key)
+        这个节点默认会将速度指令发布到 /turtle1/cmd_vel 话题。
+        launch-prefix="xterm -e" 的作用是在一个新的终端窗口(xterm)中启动这个节点，
+        这样它才能正确地捕获键盘输入。
+    -->
+    <node pkg="turtlesim" type="turtle_teleop_key" name="turtle_teleop_key" launch-prefix="xterm -e">
+        <!--
+            同样使用 <remap> 标签进行话题重映射。
+            将该节点原来要发布的 /turtle1/cmd_vel 话题，重定向到 /teleop_turtle/cmd_vel 话题。
+            这样，它发布的消息就可以被我们的转换节点订阅。
+        -->
+        <remap from="/turtle1/cmd_vel" to="/teleop_turtle/cmd_vel"/>
+    </node>
+    
+    <!-- 
+        任务3: 启动我们自己编写的转换节点
+        pkg="turtle_transformer" 指的是功能包名。
+        type="transform_node" 指的是编译后生成的可执行文件名。
+        name="message_transform_node" 是我们为这个节点设定的ROS网络中的名称。
+        output="screen" 表示将这个节点的ROS_INFO等输出信息直接打印到当前终端。
+    -->
+    <node pkg="turtle_transformer" type="transform_node" name="message_transform_node" output="screen" />
+</launch>

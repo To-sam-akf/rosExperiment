@@ -1,0 +1,31 @@
+<!-- urdf_learning/launch/gazebo_control.launch (最终版) -->
+<launch>
+    <param name="/use_sim_time" value="true"/>
+
+    <!-- 【核心修改】将model的默认值改为最终的集成文件 -->
+    <arg name="model" default="$(find urdf_learning)/urdf/car_robot_rplidar.xacro"/>
+    <arg name="rvizconfig" default="$(find urdf_learning)/config/gazebo.rviz"/>
+
+    <!-- 1. 启动Gazebo仿真环境 -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="gui" value="true"/>
+    </include>
+
+    <!-- 2. 加载机器人模型描述参数 -->
+    <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+
+    <!-- 3. 在Gazebo中加载机器人模型 -->
+    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+          args="-urdf -model car_robot_rplidar -param robot_description"/>
+
+    <!-- 4. 启动robot_state_publisher -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <!-- 5. 启动RQT机器人控制插件 -->
+    <node name="rqt_robot_steering" pkg="rqt_robot_steering" type="rqt_robot_steering">
+      <param name="default_topic" value="/cmd_vel"/>
+    </node>
+    
+    <!-- 6. 启动RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+</launch>

@@ -1,0 +1,16 @@
+<launch>
+
+  <node pkg="turtlesim" type="turtlesim_node" name="my_turtle1">
+    <remap from="/turtle1/cmd_vel" to="/cmd_vel"/>
+    <param name="background_r" value="255" type="int"/>  <!-- 红色通道 -->
+    <param name="background_g" value="255" type="int"/>  <!-- 绿色通道 -->
+    <param name="background_b" value="100" type="int"/>  <!-- 蓝色通道（你设置的值） -->
+  </node>
+
+  <node pkg="turtlesim" type="turtle_teleop_key" name="my_teleop_key" output="screen">
+    <remap from="/turtle1/cmd_vel" to="/cmd_vel"/>
+    <param name="scale_linear" value="2" type="double"/>
+    <param name="scale_angular" value="1" type="double"/>
+  </node>
+  
+</launch>

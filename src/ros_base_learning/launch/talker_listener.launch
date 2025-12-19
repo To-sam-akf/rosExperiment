@@ -1,0 +1,7 @@
+<launch>
+     <!-- 启动 talker 节点 -->
+  <node pkg="ros_base_learning" type="talker_node" name="talker_node" output="screen" />
+
+  <!-- 启动 listener 节点 -->
+  <node pkg="ros_base_learning" type="listener_node" name="listener_node" output="screen" />
+</launch>

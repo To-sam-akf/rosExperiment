@@ -1,0 +1,16 @@
+<launch>
+  <!-- 定义两个参数，并给它们设置默认值 -->
+  <arg name="val1" default="10" />
+  <arg name="val2" default="20" />
+
+  <!-- 启动服务器节点 -->
+  <node pkg="ros_base_learning" type="add_server" name="add_two_ints_server" output="screen" />
+
+  <!-- 启动客户端节点 -->
+  <!-- 使用 $(arg val1) 的语法来引用上面定义的参数 -->
+  
+  <!-- type is exc_file name -->
+  <node pkg="ros_base_learning" type="add_client" name="add_two_ints_client" output="screen"
+        args="$(arg val1) $(arg val2)" />
+
+</launch>

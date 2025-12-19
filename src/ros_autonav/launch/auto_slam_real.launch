@@ -1,0 +1,29 @@
+<launch>
+    <!-- 1. 必须使用系统时间 -->
+    <param name="/use_sim_time" value="false" />
+
+    <!-- 2. 硬件 TF (连接底盘和雷达) -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_rplidar_link_broadcaster"
+        args="0.0 0.0 0.1 1.5707963267949 0.0 0.0 base_link rplidar_link"/>
+
+    <!-- 3. 启动 Gmapping (核心：它负责建图 + 定位) -->
+    <include file="$(find ros_autonav)/launch/gmapping.launch">
+        <!-- 确保 gmapping 的 base_frame 是 base_link (如果你的车只有 base_link) -->
+        <arg name="scan_topic" value="/scan" />
+    </include>
+
+    <!-- 4. 启动 Move Base (核心：负责避障) -->
+    <include file="$(find ros_autonav)/launch/move_base.launch"/>
+
+    <!-- 5. Rviz 可视化 -->
+    <arg name="rvizconfig" default="$(find ros_autonav)/config/turtle_rviz.rviz"/>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"/>
+
+    <!-- 添加/修改以下参数，让它反应快一点 -->
+    <!-- 如果全局规划器 5秒 算不出路，就放弃 -->
+    <param name="planner_patience" value="5.0" /> 
+    <!-- 如果盘旋清理震荡超时，就放弃 -->
+    <param name="oscillation_timeout" value="10.0" />
+    <!-- 恢复行为的尝试次数 -->
+    <param name="max_planning_retries" value="2" />
+</launch>

@@ -1,0 +1,2 @@
+robot_simulation:ros_2dnav_learning:ros_2dnav_practice:ros_autonav:ros_base_learning:turtle_transformer:urdf_learning
+-DCATKIN_DEVEL_PREFIX=/home/sam/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/sam/catkin_ws/install -G Unix Makefiles

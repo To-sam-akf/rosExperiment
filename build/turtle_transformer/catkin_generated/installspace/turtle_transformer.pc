@@ -1,0 +1,8 @@
+prefix=/home/sam/catkin_ws/install
+
+Name: turtle_transformer
+Description: Description of turtle_transformer
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

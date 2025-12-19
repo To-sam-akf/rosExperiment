@@ -1,0 +1,8 @@
+prefix=/home/sam/catkin_ws/devel
+
+Name: ros_autonav
+Description: Description of ros_autonav
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
